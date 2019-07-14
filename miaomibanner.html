@@ -1,0 +1,219 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>夏目友人帐</title>
+
+<link href="css/banner.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+body {
+	background-color: #FFC;
+}
+</style>
+</head>
+<body>
+
+<div id="banner_box" class="banner_box">
+	<div class="banner_cot">
+		<!--放banner页面-->
+		<div class="banner_list" id="banner_list">
+			<!--第一个页面 天空下的猫老师-->
+			<div class="page_box show">
+				<div class="bg_box">
+					<img src="image/miaomi/sky_xia.png" class="sky_xia sky_anim2" />
+					<img src="image/miaomi/sky_shang.png" />
+
+				</div>
+				<div class="content">
+					<div class="main_box">
+						<div class="sky_cot sky_anim2">
+							<img src="image/miaomi/sky_cot2.png" />
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--第二个页面 房间里的猫老师-->
+			<div class="page_box">
+				<div class="bg_box">
+					<img src="image/miaomi/room_bg2.jpg" />
+				</div>
+				<div class="content">
+					<div class="main_box">
+						<div class="room_cot">
+							<div class="room_anim">
+								<img src="image/miaomi/room_cot2.png" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--第三个页面 雪中的猫老师-->
+			<div class="page_box  ">
+				<div class="bg_box">
+					<img src="image/miaomi/snow_bg3.png" />
+				</div>
+				<div class="content">
+					<div class="main_box">
+						<div class="snow_cot snow_anim">
+							<img src="image/miaomi/snow_cot3.png" />
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--第四个页面 森林中的猫老师-->
+			<div class="page_box ">
+				<div class="bg_box">
+					<img src="image/miaomi/forest_bg4.jpg" />
+				</div>
+				<div class="content">
+					<div class="main_box">
+						<div class="forest_cot forest_anim">
+							<img src="image/miaomi/forest_cont2.png" />
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<!--放浮动链接小图标-->
+		<div class="product_btns" id="product_btns">
+			<div class="content">
+				<div class="btns_box" id="control_box">
+					<a href="#" class="icon_bg icon_show"></a>
+					<a href="#" class="icon_bg"></a>
+					<a href="#" class="icon_bg"></a>
+					<a href="#" class="icon_bg"></a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="js/jquery-1.10.2.min.js"></script>
+<script>
+	(function () {
+		//2016-13-10 begin
+		var $banner_box = $("#banner_box"),
+			$pages = $("#banner_list").find(".page_box"),
+			  $mainBoxs = $pages.find(".main_box"),
+			   $bgs = $pages.find(".bg_box img"),
+			$controlBox = $("#control_box"),
+			$productBtns = $("#product_btns"),
+			$controls = $controlBox.find("a");
+		var data = {
+			pLength: $pages.length,//记录一共有多少个page_box
+			curP: 0,
+			isCan: true,
+			isOnbtn: false,
+			fColor: [2, 2, 1, 1, 1],
+			dur: 3500,
+			cNum: 0
+		};
+
+		//自动轮播换页函数
+		var cId;
+		var pageChange = function (idx) {
+			if (data.isOnbtn)
+				return;
+			if (idx >= -1 && idx < data.pLength && idx != data.curP && data.isCan) {
+				data.isCan = false;
+				data.cNum++;
+				clearInterval(cId);//停止动画
+				idx = idx == -1 ? data.pLength - 1 : idx;//条件表达式 真前假后 指向最后一张
+				$controls.removeClass("icon_show").eq(idx).addClass("icon_show");
+				$pages.eq(data.curP).css({ zIndex: 0 });
+				$pages.eq(idx).addClass("show").css({ opacity: 0, zIndex: 1 }).animate({ opacity: 1 }, 400, function () {
+					$pages.eq(data.curP).removeClass("show");
+					$(this).addClass("show");
+					data.isCan = true;
+					data.curP = idx;
+					data.cNum--;
+					if (data.cNum == 0) {
+						//setInterval() 方法会不停地调用函数，直到 clearInterval() 被调用或窗口被关闭。
+						cId = setInterval(function () {
+							pageChange((data.curP + 1) % data.pLength);
+							//% 求余数 当要处理 X % Y时, 如果, X < Y 的话, 回传值就是 X 自己 1 % 4 = 1
+						}, data.dur);//data.dur 是时间
+					}
+				});
+			}
+		}
+		//鼠标经过 下方导航
+		$controls.on("mouseenter", function () {
+			data.isCan = true;
+			pageChange($controls.index(this));
+			data.isOnbtn = true;
+		});
+		$controls.on("mouseleave", function () {
+			data.isOnbtn = false;
+		});
+
+		cId = setInterval(function () {
+			pageChange((data.curP + 1) % data.pLength);
+		}, data.dur);
+
+		//网页自由缩放  2016-10-12 调整
+		var isIE6 = navigator.userAgent.indexOf("MSIE 6.0") > 0;//获取浏览器的版本
+		//调整
+		//页面自缩放
+		var resize = function () {
+			var w = $(window).width(),
+				h = $(window).height();
+
+			$banner_box.height(h);
+			if (w / h < 1920 / 1080) {
+				$bgs.height(h).css({ width: "auto", margin: -.5 * h + "px 0 0 " + -.5 * 1920 / 1080 * h + "px" });
+
+			} else {
+				$bgs.width(w).css({ height: "auto", margin: -.5 * w * 1080 / 1920 + "px 0 0 " + -.5 * w + "px" });
+			}
+			resize_img(w, h);//调用函数 改变内容图片大小
+
+			var imgH = $bgs.height();
+			$mainBoxs.height(imgH).css("margin-top", -.5 * imgH + "px");
+			var cls;
+			switch (true) {
+				case w >= 1600: { cls = "big_view"; break; }
+				case w < 1600 && w >= 1440: { cls = "mid_view"; break; }
+				case w < 1440: { cls = "small_view"; break; }
+			}
+			var ws = $banner_box[0].className;
+			if (isIE6 && (ws.indexOf("big") != -1 || ws.indexOf("mid") != -1 || ws.indexOf("small") != -1) && ws.indexOf(cls) == -1)
+				location.reload();
+			banner_box.className = "banner_box " + cls;
+		};
+		$(window).resize(resize);
+		resize();
+
+		function resize_img(w, h) {
+			var snoww = w * 593 / 1920,
+			   snowh = h * 448 / 1080;
+			var roomw = w * 668 / 1920,
+				roomh = h * 585 / 1080;
+			var forestw = w * 500 / 1920,
+				foresth = h * 636 / 1080;
+			var skyw = w * 371 / 1920,
+				skyh = h * 341 / 1080;
+			if (w / h < 1920 / 1080) {
+				//$(".snow_cot").height(snowh).css({ width: snowh * 宽 / 高 + "px", margin: "0 0 0" + -.5 * 宽 / 高 * snowh + "px" });
+				$(".snow_cot").height(snowh).css({ width: snowh * 593 / 448 + "px", margin: "0 0 0" + -.5 * 593 / 448 * snowh + "px" });
+				$(".room_cot").height(roomh).css({ width: roomh * 668 / 585 + "px", margin: "0 0 0" + -.5 * 400 / 585 * roomh + "px" });
+				$(".forest_cot").height(foresth).css({ width: foresth * 500 / 636 + "px", margin: "0 0 0" + -.5 * 500 / 636 * foresth + "px" });
+				$(".sky_cot").height(skyh).css({ width: skyh * 371 / 341 + "px" });
+
+			} else {
+				//$(".snow_cot").width(snoww).css({ height: snoww * 高 / 宽 + "px", margin: "0 0 0" + -.5 * snoww + "px" });
+				$(".snow_cot").width(snoww).css({ height: snoww * 448 / 593 + "px", margin: "0 0 0" + -.5 * snoww + "px" });
+				$(".room_cot").width(roomw).css({ height: roomw * 585 / 668 + "px", margin: "0 0 0" + -.5 * 400 * roomw / 668 + "px" });
+				$(".forest_cot").width(forestw).css({ height: forestw * 636 / 500 + "px", margin: "0 0 0" + -.5 * forestw + "px" });
+				$(".sky_cot").width(skyw).css({ height: skyw * 341 / 371 + "px" });
+			}
+
+		}
+	})();
+</script>
+
+</body>
+</html>
+

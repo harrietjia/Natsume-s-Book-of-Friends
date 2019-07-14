@@ -1,0 +1,20 @@
+*{margin:0;padding:0;list-style: none;}
+.lanren p { padding: 1em; font-family: monospace; font-size: 2em; }
+.lanren button {
+	margin: auto;
+	text-align: center;
+	display: block;
+	width: 150px;
+	height: 40px;
+	background: #FC9;
+	border: 0;
+	cursor: pointer;
+	position: absolute;
+	left: 0;
+	right: 0;
+	border-radius: 3px;
+	font-family: monospace;
+	font-size: 2em;
+	background-color: #FF9966;
+}
+.lanren article { width: 100%; margin: auto;box-sizing: border-box; }
